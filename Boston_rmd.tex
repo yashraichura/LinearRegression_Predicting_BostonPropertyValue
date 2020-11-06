@@ -1,0 +1,1284 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Regression},
+            pdfauthor={Purba Roy},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Regression}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Purba Roy}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load standard libraries}
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(MASS) }\CommentTok{# Modern applied statistics functions}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Housing Values in Suburbs of Boston}
+
+In this problem we will use the Boston dataset that is available in the
+\texttt{MASS} package. This dataset contains information about median
+house value for 506 neighborhoods in Boston, MA.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loading the data}
+\NormalTok{BostonData <-}\StringTok{ }\NormalTok{Boston}
+\end{Highlighting}
+\end{Shaded}
+
+\benum
+
+\item
+
+Data Description. Tidy data as necessary.
+
+\textbf{There are 14 columns/ variables, and 506 rows of data.}
+\textbf{The Boston Dataset has the following variables:} \textbf{crim:
+this depicts the crime per capita rate in a town} \textbf{zn: this is
+the proportion of residential land zone for lots that have an area more
+than 25,000 sq ft} \textbf{indus: This depicts the proportion of
+non-retail business acres per town} \textbf{chas: this is a dummy
+variable for charles river where if the value is 1, the tract bounds
+river} \textbf{nox : nitrogen oxides concentration} \textbf{rm : average
+number of rooms per dwelling} \textbf{age: this is the proportion of
+owner-occupied units built prior to 1940} \textbf{dis :This is the
+weighted mean of distances to five Boston employment centres}
+\textbf{rad: this is the index of accessibility to radial highways.}
+\textbf{tax ; This is the full-value property-tax rate per \$10,000}
+\textbf{ptratio: the pupil-teacher ratio by town } \textbf{black: This
+is the proportion of blacks by town} \textbf{lstat: This is the lower
+status of the population in percentage.} \textbf{medv: This is the
+median value of owner-occupied homes in \$1000s}
+
+\textbf{We see that the variables where the data is a whole number, the
+data type is integer, and for other cases, its numeric. We convert chas
+to categorical data as its value is only 0 and 1} \textbf{None of the
+variables have NA data, hence its already a clean data.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# to find the dimensions of the data set}
+\KeywordTok{dim}\NormalTok{(BostonData)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 506  14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# to check the variable names and respective data.}
+\KeywordTok{head}\NormalTok{(BostonData)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      crim zn indus chas   nox    rm  age    dis rad tax ptratio  black
+## 1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90
+## 2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90
+## 3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83
+## 4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63
+## 5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90
+## 6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12
+##   lstat medv
+## 1  4.98 24.0
+## 2  9.14 21.6
+## 3  4.03 34.7
+## 4  2.94 33.4
+## 5  5.33 36.2
+## 6  5.21 28.7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{?Boston}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## starting httpd help server ... done
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#View(BostonData)}
+
+\CommentTok{# to check the datatype of each variable.}
+\KeywordTok{sapply}\NormalTok{(BostonData,class)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      crim        zn     indus      chas       nox        rm       age 
+## "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric" 
+##       dis       rad       tax   ptratio     black     lstat      medv 
+## "numeric" "integer" "numeric" "numeric" "numeric" "numeric" "numeric"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# converting chas  to categorical, as they depict categorical values, so that we can eliminate them from our linear regression model.}
+
+\NormalTok{BostonData}\OperatorTok{$}\NormalTok{chas <-}\KeywordTok{as.factor}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{chas)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{I have taken medv as the response variable of interest as it is
+a continuous numeric value, and variables such as tax, lstt, dis, etc
+are dependant on the value of medv} \textbf{We see that our varible medv
+ha sa normal distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# to check the distribution of medv}
+\KeywordTok{ggplot}\NormalTok{(BostonData) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{medv), }\DataTypeTok{alpha=}\FloatTok{0.1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\textbf{ANSWER} \textbf{On getting the summary and residual plots of the
+linear regression model, we see that the p- value of all the variables
+are in the range of less than 2.2e-12 which is significantly than 0.05.
+This says that all the variables are statistically significant}
+
+\textbf{On Plotting the residual plot, we note the below observations:}
+
+\textbf{better models for fitting the model} \textbf{For the predictor
+variables lstat and rm, the residual points are scattered and do not
+follow a trend, which makes it a good residual plot. Also, there is a
+strong negative correlation for lstat (=-0.7376627), and a strong
+positive corelation for rm (0.6953599), which proves that these 2
+predictor variables are better for fitting the regression model.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+ \CommentTok{#linearMod <- lm(BostonData$medv ~BostonData$indus, data=BostonData) }
+ \CommentTok{#linearMod}
+ \CommentTok{#residual <-resid(linearMod)}
+ \CommentTok{#plot <- ggplot(data=data.frame(x=BostonData$medv, y= residual),}
+  \CommentTok{#               aes(x=x,y=y)) + geom_point()+ geom_abline(slope=0,intercept=0)+stat_smooth(method="lm") }
+  \CommentTok{#print(plot + ggtitle(i) +labs(x="medv", y="residual"))}
+
+\CommentTok{# excluding chas as its an ordinal value and removing medv too.}
+\NormalTok{column <-}\StringTok{ }\KeywordTok{colnames}\NormalTok{(BostonData)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{,}\DecValTok{5}\OperatorTok{:}\DecValTok{13}\NormalTok{)]}
+
+\CommentTok{# initialising a dataframe for coefficients}
+\NormalTok{coef_df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{()}
+
+\CommentTok{# creating a for loop to fit linear regression model for each predictor Vs Medv.}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ column)\{}
+\NormalTok{  BostonDataSS <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(BostonData, }\DataTypeTok{select=}\KeywordTok{c}\NormalTok{(}\StringTok{'medv'}\NormalTok{,i))}
+\NormalTok{  linearMod <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(medv }\OperatorTok{~}\StringTok{ }\NormalTok{.,BostonDataSS)}
+  \KeywordTok{print}\NormalTok{(i)}
+  \KeywordTok{print}\NormalTok{(}\KeywordTok{summary}\NormalTok{(linearMod))}
+\NormalTok{  residual <-}\KeywordTok{resid}\NormalTok{(linearMod)}
+\NormalTok{  plot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x=}\NormalTok{BostonDataSS}\OperatorTok{$}\NormalTok{medv, }\DataTypeTok{y=}\NormalTok{ residual),}
+                 \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{x,}\DataTypeTok{y=}\NormalTok{y)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{()}\OperatorTok{+}\StringTok{ }\KeywordTok{geom_abline}\NormalTok{(}\DataTypeTok{slope=}\DecValTok{0}\NormalTok{,}\DataTypeTok{intercept=}\DecValTok{0}\NormalTok{)}\OperatorTok{+}\KeywordTok{stat_smooth}\NormalTok{(}\DataTypeTok{method=}\StringTok{"lm"}\NormalTok{) }
+  \KeywordTok{print}\NormalTok{(plot }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(i) }\OperatorTok{+}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"medv"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"residual"}\NormalTok{))}
+  
+\NormalTok{  coef_df <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(coef_df, }\KeywordTok{summary}\NormalTok{(linearMod)}\OperatorTok{$}\NormalTok{coef[i,}\StringTok{"Estimate"}\NormalTok{])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "crim"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -16.957  -5.449  -2.007   2.512  29.800 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 24.03311    0.40914   58.74   <2e-16 ***
+## crim        -0.41519    0.04389   -9.46   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.484 on 504 degrees of freedom
+## Multiple R-squared:  0.1508, Adjusted R-squared:  0.1491 
+## F-statistic: 89.49 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{verbatim}
+## [1] "zn"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.918  -5.518  -1.006   2.757  29.082 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 20.91758    0.42474  49.248   <2e-16 ***
+## zn           0.14214    0.01638   8.675   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.587 on 504 degrees of freedom
+## Multiple R-squared:  0.1299, Adjusted R-squared:  0.1282 
+## F-statistic: 75.26 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-2.pdf}
+
+\begin{verbatim}
+## [1] "indus"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.017  -4.917  -1.457   3.180  32.943 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 29.75490    0.68345   43.54   <2e-16 ***
+## indus       -0.64849    0.05226  -12.41   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.057 on 504 degrees of freedom
+## Multiple R-squared:  0.234,  Adjusted R-squared:  0.2325 
+## F-statistic:   154 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-3.pdf}
+
+\begin{verbatim}
+## [1] "nox"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.691  -5.121  -2.161   2.959  31.310 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   41.346      1.811   22.83   <2e-16 ***
+## nox          -33.916      3.196  -10.61   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.323 on 504 degrees of freedom
+## Multiple R-squared:  0.1826, Adjusted R-squared:  0.181 
+## F-statistic: 112.6 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-4.pdf}
+
+\begin{verbatim}
+## [1] "rm"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -23.346  -2.547   0.090   2.986  39.433 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  -34.671      2.650  -13.08   <2e-16 ***
+## rm             9.102      0.419   21.72   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.616 on 504 degrees of freedom
+## Multiple R-squared:  0.4835, Adjusted R-squared:  0.4825 
+## F-statistic: 471.8 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-5.pdf}
+
+\begin{verbatim}
+## [1] "age"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.097  -5.138  -1.958   2.397  31.338 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 30.97868    0.99911  31.006   <2e-16 ***
+## age         -0.12316    0.01348  -9.137   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.527 on 504 degrees of freedom
+## Multiple R-squared:  0.1421, Adjusted R-squared:  0.1404 
+## F-statistic: 83.48 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-6.pdf}
+
+\begin{verbatim}
+## [1] "dis"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.016  -5.556  -1.865   2.288  30.377 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  18.3901     0.8174  22.499  < 2e-16 ***
+## dis           1.0916     0.1884   5.795 1.21e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.914 on 504 degrees of freedom
+## Multiple R-squared:  0.06246,    Adjusted R-squared:  0.0606 
+## F-statistic: 33.58 on 1 and 504 DF,  p-value: 1.207e-08
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-7.pdf}
+
+\begin{verbatim}
+## [1] "rad"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.770  -5.199  -1.967   3.321  33.292 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 26.38213    0.56176  46.964   <2e-16 ***
+## rad         -0.40310    0.04349  -9.269   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.509 on 504 degrees of freedom
+## Multiple R-squared:  0.1456, Adjusted R-squared:  0.1439 
+## F-statistic: 85.91 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-8.pdf}
+
+\begin{verbatim}
+## [1] "tax"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -14.091  -5.173  -2.085   3.158  34.058 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 32.970654   0.948296   34.77   <2e-16 ***
+## tax         -0.025568   0.002147  -11.91   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.133 on 504 degrees of freedom
+## Multiple R-squared:  0.2195, Adjusted R-squared:  0.218 
+## F-statistic: 141.8 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-9.pdf}
+
+\begin{verbatim}
+## [1] "ptratio"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -18.8342  -4.8262  -0.6426   3.1571  31.2303 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   62.345      3.029   20.58   <2e-16 ***
+## ptratio       -2.157      0.163  -13.23   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.931 on 504 degrees of freedom
+## Multiple R-squared:  0.2578, Adjusted R-squared:  0.2564 
+## F-statistic: 175.1 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-10.pdf}
+
+\begin{verbatim}
+## [1] "black"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -18.884  -4.862  -1.684   2.932  27.763 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 10.551034   1.557463   6.775 3.49e-11 ***
+## black        0.033593   0.004231   7.941 1.32e-14 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.679 on 504 degrees of freedom
+## Multiple R-squared:  0.1112, Adjusted R-squared:  0.1094 
+## F-statistic: 63.05 on 1 and 504 DF,  p-value: 1.318e-14
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-11.pdf}
+
+\begin{verbatim}
+## [1] "lstat"
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataSS)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.168  -3.990  -1.318   2.034  24.500 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 34.55384    0.56263   61.41   <2e-16 ***
+## lstat       -0.95005    0.03873  -24.53   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.216 on 504 degrees of freedom
+## Multiple R-squared:  0.5441, Adjusted R-squared:  0.5432 
+## F-statistic: 601.6 on 1 and 504 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-4-12.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# find the correlation}
+\KeywordTok{cor}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{medv, BostonData}\OperatorTok{$}\NormalTok{rm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.6953599
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# find the correlation}
+\KeywordTok{cor}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{medv, BostonData}\OperatorTok{$}\NormalTok{lstat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -0.7376627
+\end{verbatim}
+
+\item
+
+Fitting a multiple regression model to predict the response using all of
+the predictors.
+
+\textbf{For the predictor variables, age and indus, the p values are
+much higher than 0.05 which mean that they are not statistically
+significant. For the remaining variables, the p values are strongly
+statiscally significant of the order 0.} \textbf{FOr predictor
+variables, for which the p value are less than 0.05, we reject the null
+hypothesis. SO we do not reject the null hypothesis for age and indus}
+\textbf{So this means that indus and age behave like independant
+variables.} \textbf{The multiple R square value is 0.7355}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{BostonDataO <-}\StringTok{ }\NormalTok{BostonData[}\OperatorTok{-}\DecValTok{4}\NormalTok{]}
+\KeywordTok{options}\NormalTok{(}\DataTypeTok{scipen=}\DecValTok{999}\NormalTok{)}
+\NormalTok{multiple_reg <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(medv }\OperatorTok{~}\NormalTok{., }\DataTypeTok{data=}\NormalTok{BostonDataO)}
+
+\KeywordTok{summary}\NormalTok{(multiple_reg)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ ., data = BostonDataO)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.3968  -2.8103  -0.6455   1.9141  26.3755 
+## 
+## Coefficients:
+##               Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)  36.891960   5.146516   7.168    0.000000000002790 ***
+## crim         -0.113139   0.033113  -3.417             0.000686 ***
+## zn            0.047052   0.013847   3.398             0.000734 ***
+## indus         0.040311   0.061707   0.653             0.513889    
+## nox         -17.366999   3.851224  -4.509    0.000008130111167 ***
+## rm            3.850492   0.421402   9.137 < 0.0000000000000002 ***
+## age           0.002784   0.013309   0.209             0.834407    
+## dis          -1.485374   0.201187  -7.383    0.000000000000664 ***
+## rad           0.328311   0.066542   4.934    0.000001104312049 ***
+## tax          -0.013756   0.003766  -3.653             0.000287 ***
+## ptratio      -0.990958   0.131399  -7.542    0.000000000000225 ***
+## black         0.009741   0.002706   3.600             0.000351 ***
+## lstat        -0.534158   0.051072 -10.459 < 0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.787 on 493 degrees of freedom
+## Multiple R-squared:  0.7355, Adjusted R-squared:  0.7291 
+## F-statistic: 114.3 on 12 and 493 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# for coefficients}
+\NormalTok{multiple_reg}\OperatorTok{$}\NormalTok{coefficients}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   (Intercept)          crim            zn         indus           nox 
+##  36.891959797  -0.113139078   0.047052458   0.040311454 -17.366999394 
+##            rm           age           dis           rad           tax 
+##   3.850491692   0.002783757  -1.485373898   0.328311011  -0.013755829 
+##       ptratio         black         lstat 
+##  -0.990958031   0.009741451  -0.534157620
+\end{verbatim}
+
+\item
+
+Creating a plot displaying the univariate regression coefficients on the
+x-axis and the multiple regression coefficients on the y-axis.
+
+\textbf{We plotted the scatter plot with multiple regression on the y
+axis and linear regression on the x axis, and see the p value for the
+different predictor variables.} \textbf{We see that for rm, the p value
+for linear model was \textasciitilde{}10, and after multiple regression,
+where we add other predictor variables to our model, the p value drops
+to \textasciitilde{}3.} \textbf{For some of the predictor variables, the
+p value of the linear and the multiple regresiion models are similar.}
+\textbf{This shows that when we add random values, the effect of the
+predictor on the response variables decreases the p value.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# dropping the intercept value}
+\NormalTok{Dropmultiple <-}\StringTok{ }\NormalTok{multiple_reg}\OperatorTok{$}\NormalTok{coefficients[}\OperatorTok{-}\DecValTok{1}\NormalTok{]}
+
+\CommentTok{#converting to a data frame}
+\NormalTok{multiple_reg_model <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(Dropmultiple)}
+\NormalTok{multiple_reg_model<-tibble}\OperatorTok{::}\KeywordTok{rownames_to_column}\NormalTok{(multiple_reg_model,}\StringTok{"linear_reg_model_old"}\NormalTok{)}
+\NormalTok{multiple_reg_model}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    linear_reg_model_old  Dropmultiple
+## 1                  crim  -0.113139078
+## 2                    zn   0.047052458
+## 3                 indus   0.040311454
+## 4                   nox -17.366999394
+## 5                    rm   3.850491692
+## 6                   age   0.002783757
+## 7                   dis  -1.485373898
+## 8                   rad   0.328311011
+## 9                   tax  -0.013755829
+## 10              ptratio  -0.990958031
+## 11                black   0.009741451
+## 12                lstat  -0.534157620
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{linear_reg_model_coef <-}\StringTok{ }\NormalTok{coef_df[,]}
+
+\NormalTok{linear_reg_model_old <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"crim"}\NormalTok{,}\StringTok{"zn"}\NormalTok{,}\StringTok{"indus"}\NormalTok{,}\StringTok{"nox"}\NormalTok{,}\StringTok{"rm"}\NormalTok{,}\StringTok{"age"}\NormalTok{,}\StringTok{"dis"}\NormalTok{,}\StringTok{"rad"}\NormalTok{,}\StringTok{"tax"}\NormalTok{,}\StringTok{"ptratio"}\NormalTok{,}\StringTok{"black"}\NormalTok{,}\StringTok{"lstat"}\NormalTok{)}
+\NormalTok{linear_reg_model_old<-}\KeywordTok{as.data.frame}\NormalTok{(linear_reg_model_old)}
+\NormalTok{linear_reg_model<-}\KeywordTok{cbind}\NormalTok{(linear_reg_model_old,linear_reg_model_coef)}
+\CommentTok{#linear_reg_model<-tibble::rownames_to_column(linear_reg_model,"Variables_Predictor")}
+
+\NormalTok{dataset<-}\KeywordTok{left_join}\NormalTok{(linear_reg_model,multiple_reg_model, }\DataTypeTok{by=}\StringTok{"linear_reg_model_old"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Column `linear_reg_model_old` joining factor and character vector,
+## coercing into character vector
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{linear_reg_model}\OperatorTok{$}\NormalTok{model_type=}\StringTok{"one"}
+\NormalTok{multiple_reg_model}\OperatorTok{$}\NormalTok{model_type=}\StringTok{"many"}
+\KeywordTok{colnames}\NormalTok{(linear_reg_model)<-}\KeywordTok{c}\NormalTok{(}\StringTok{"linear_reg_model_old"}\NormalTok{,}\StringTok{"Dropmultiple"}\NormalTok{,}\StringTok{"model_type"}\NormalTok{)}
+\NormalTok{final_dataset<-}\KeywordTok{rbind}\NormalTok{(linear_reg_model,multiple_reg_model)}
+
+\CommentTok{# plotting}
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data=}\NormalTok{final_dataset, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{linear_reg_model_old, }\DataTypeTok{y=}\NormalTok{Dropmultiple, }\DataTypeTok{color=}\NormalTok{model_type))}\OperatorTok{+}\KeywordTok{geom_point}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#plot(linear_reg_model,newTable, xlim = c(-5,15), ylim=c(-3,5))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{After comparing the different p values for different predictor
+variables, we see that for a few, the avlues have increased.} \textbf{It
+is uncertain that there is a non linear relation. SO a non linear
+association might not be best for the dataset }
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Poly_function <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(column)}
+\NormalTok{\{}
+\NormalTok{  poly <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(medv }\OperatorTok{~}\StringTok{ }\KeywordTok{poly}\NormalTok{(column,}\DecValTok{3}\NormalTok{), }\DataTypeTok{data=}\NormalTok{ BostonData)}
+\NormalTok{\}}
+
+\NormalTok{Poly_crim <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{crim)}
+\NormalTok{Poly_zn <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{zn)}
+\NormalTok{Poly_indus <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{indus)}
+\NormalTok{Poly_nox <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{nox)}
+\NormalTok{Poly_rm <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{rm)}
+\NormalTok{Poly_age <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{age)}
+\NormalTok{Poly_dis <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{dis)}
+\NormalTok{Poly_rad <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{rad)}
+\NormalTok{Poly_tax <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{tax)}
+\NormalTok{Poly_ptratio <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{ptratio)}
+\NormalTok{Poly_black <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{black)}
+\NormalTok{Poly_lstat <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{lstat)}
+\NormalTok{Poly_medv <-}\StringTok{ }\KeywordTok{Poly_function}\NormalTok{(BostonData}\OperatorTok{$}\NormalTok{medv)}
+\KeywordTok{summary}\NormalTok{(Poly_crim)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.983  -4.975  -1.940   2.881  33.391 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)       22.5328     0.3627  62.124 < 0.0000000000000002 ***
+## poly(column, 3)1 -80.2545     8.1589  -9.836 < 0.0000000000000002 ***
+## poly(column, 3)2  50.2416     8.1589   6.158        0.00000000151 ***
+## poly(column, 3)3 -18.2905     8.1589  -2.242               0.0254 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.159 on 502 degrees of freedom
+## Multiple R-squared:  0.2177, Adjusted R-squared:  0.213 
+## F-statistic: 46.57 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_zn)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.449  -5.549  -1.049   3.225  29.551 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)       22.5328     0.3747  60.129 < 0.0000000000000002 ***
+## poly(column, 3)1  74.4966     8.4296   8.837 < 0.0000000000000002 ***
+## poly(column, 3)2 -19.2591     8.4296  -2.285               0.0227 *  
+## poly(column, 3)3  33.5309     8.4296   3.978            0.0000798 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.43 on 502 degrees of freedom
+## Multiple R-squared:  0.1649, Adjusted R-squared:  0.1599 
+## F-statistic: 33.05 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_indus)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.760  -4.725  -1.009   2.932  32.038 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)       22.5328     0.3487  64.614 < 0.0000000000000002 ***
+## poly(column, 3)1 -99.9759     7.8445 -12.745 < 0.0000000000000002 ***
+## poly(column, 3)2  38.5184     7.8445   4.910           0.00000123 ***
+## poly(column, 3)3 -18.6140     7.8445  -2.373                0.018 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.844 on 502 degrees of freedom
+## Multiple R-squared:  0.2768, Adjusted R-squared:  0.2725 
+## F-statistic: 64.06 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_nox)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.104  -5.020  -2.144   2.747  32.416 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)       22.5328     0.3682  61.199 <0.0000000000000002 ***
+## poly(column, 3)1 -88.3183     8.2823 -10.664 <0.0000000000000002 ***
+## poly(column, 3)2  13.8989     8.2823   1.678              0.0939 .  
+## poly(column, 3)3  16.9686     8.2823   2.049              0.0410 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.282 on 502 degrees of freedom
+## Multiple R-squared:  0.1939, Adjusted R-squared:  0.189 
+## F-statistic: 40.24 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_age)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -16.443  -4.909  -2.234   2.185  32.944 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)       22.5328     0.3766  59.830 <0.0000000000000002 ***
+## poly(column, 3)1 -77.9087     8.4717  -9.196 <0.0000000000000002 ***
+## poly(column, 3)2 -23.3290     8.4717  -2.754              0.0061 ** 
+## poly(column, 3)3  -8.6148     8.4717  -1.017              0.3097    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.472 on 502 degrees of freedom
+## Multiple R-squared:  0.1566, Adjusted R-squared:  0.1515 
+## F-statistic: 31.06 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_dis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -12.571  -5.242  -2.037   2.397  34.769 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)       22.5328     0.3879  58.082 < 0.0000000000000002 ***
+## poly(column, 3)1  51.6551     8.7267   5.919          0.000000006 ***
+## poly(column, 3)2 -37.5859     8.7267  -4.307          0.000019913 ***
+## poly(column, 3)3  20.1322     8.7267   2.307               0.0215 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.727 on 502 degrees of freedom
+## Multiple R-squared:  0.105,  Adjusted R-squared:  0.09968 
+## F-statistic: 19.64 on 3 and 502 DF,  p-value: 0.000000000004736
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_rad)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -16.630  -5.151  -2.017   3.169  33.594 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)       22.5328     0.3721  60.557 < 0.0000000000000002 ***
+## poly(column, 3)1 -78.8742     8.3700  -9.423 < 0.0000000000000002 ***
+## poly(column, 3)2 -21.4799     8.3700  -2.566             0.010568 *  
+## poly(column, 3)3 -29.4095     8.3700  -3.514             0.000482 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.37 on 502 degrees of freedom
+## Multiple R-squared:  0.1767, Adjusted R-squared:  0.1718 
+## F-statistic: 35.91 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_tax)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.109  -4.952  -1.878   2.957  33.694 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)       22.5328     0.3608  62.460 <0.0000000000000002 ***
+## poly(column, 3)1 -96.8366     8.1150 -11.933 <0.0000000000000002 ***
+## poly(column, 3)2  14.9703     8.1150   1.845              0.0657 .  
+## poly(column, 3)3  -7.5431     8.1150  -0.930              0.3531    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.115 on 502 degrees of freedom
+## Multiple R-squared:  0.2261, Adjusted R-squared:  0.2215 
+## F-statistic: 48.89 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_ptratio)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -17.7795  -5.0364  -0.9778   3.4766  31.1636 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)        22.5328     0.3511  64.173 <0.0000000000000002 ***
+## poly(column, 3)1 -104.9490     7.8984 -13.287 <0.0000000000000002 ***
+## poly(column, 3)2  -12.6952     7.8984  -1.607               0.109    
+## poly(column, 3)3  -14.9472     7.8984  -1.892               0.059 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.898 on 502 degrees of freedom
+## Multiple R-squared:  0.2669, Adjusted R-squared:  0.2625 
+## F-statistic: 60.91 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_black)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -19.005  -4.802  -1.613   2.852  28.051 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)       22.5328     0.3861  58.360 < 0.0000000000000002 ***
+## poly(column, 3)1  68.9194     8.6851   7.935   0.0000000000000138 ***
+## poly(column, 3)2   9.1467     8.6851   1.053                0.293    
+## poly(column, 3)3  -4.0541     8.6851  -0.467                0.641    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.685 on 502 degrees of freedom
+## Multiple R-squared:  0.1135, Adjusted R-squared:  0.1082 
+## F-statistic: 21.43 on 3 and 502 DF,  p-value: 0.0000000000004463
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_lstat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14.5441  -3.7122  -0.5145   2.4846  26.4153 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)        22.5328     0.2399  93.937 < 0.0000000000000002 ***
+## poly(column, 3)1 -152.4595     5.3958 -28.255 < 0.0000000000000002 ***
+## poly(column, 3)2   64.2272     5.3958  11.903 < 0.0000000000000002 ***
+## poly(column, 3)3  -27.0511     5.3958  -5.013          0.000000743 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.396 on 502 degrees of freedom
+## Multiple R-squared:  0.6578, Adjusted R-squared:  0.6558 
+## F-statistic: 321.7 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Poly_medv)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in summary.lm(Poly_medv): essentially perfect fit: summary may be
+## unreliable
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ poly(column, 3), data = BostonData)
+## 
+## Residuals:
+##                   Min                    1Q                Median 
+## -0.000000000000102888 -0.000000000000000240  0.000000000000000436 
+##                    3Q                   Max 
+##  0.000000000000000607  0.000000000000013651 
+## 
+## Coefficients:
+##                                 Estimate              Std. Error
+## (Intercept)       22.5328063241106697490   0.0000000000000002121
+## poly(column, 3)1 206.6792089568270114341   0.0000000000000047715
+## poly(column, 3)2   0.0000000000000055259   0.0000000000000047715
+## poly(column, 3)3  -0.0000000000000001888   0.0000000000000047715
+##                                 t value            Pr(>|t|)    
+## (Intercept)      106226911690490880.000 <0.0000000000000002 ***
+## poly(column, 3)1  43315247865381000.000 <0.0000000000000002 ***
+## poly(column, 3)2                  1.158               0.247    
+## poly(column, 3)3                 -0.040               0.968    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.000000000000004772 on 502 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 6.254e+32 on 3 and 502 DF,  p-value: < 0.00000000000000022
+\end{verbatim}
+
+\[ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon \]
+
+\item
+
+performing a stepwise model selection procedure to determine the bets
+fit model.
+
+\textbf{We observe that only 11 predictor variables are shown the
+output, where age and indus got dropped. This shows that its a more
+optimised model as there was age and indus were acting as independant
+variables.} \textbf{The AIC value has decreased from 3035.512 for
+multiple regression to 3031.997 for stepwise selection model, which
+shows that this model is a better fit now.} \textbf{We can hence infer
+that there is a backward propogation }
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stepwise <-}\StringTok{ }\KeywordTok{stepAIC}\NormalTok{(multiple_reg, }\DataTypeTok{direction=}\StringTok{"both"}\NormalTok{, }\DataTypeTok{trace=} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{stepwise}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ crim + zn + nox + rm + dis + rad + tax + 
+##     ptratio + black + lstat, data = BostonDataO)
+## 
+## Coefficients:
+## (Intercept)         crim           zn          nox           rm  
+##    36.62031     -0.11406      0.04574    -16.46915      3.84464  
+##         dis          rad          tax      ptratio        black  
+##    -1.52610      0.31553     -0.01267     -0.97844      0.00973  
+##       lstat  
+##    -0.52810
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#aic value}
+\KeywordTok{AIC}\NormalTok{(stepwise)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3031.997
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{AIC}\NormalTok{(multiple_reg)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3035.512
+\end{verbatim}
+
+\item
+
+Evaluating the statistical assumptions in my regression analysis by
+performing a basic analysis of model residuals and any unusual
+observations.
+
+\textbf{We see that upon backward propogation, the data lies near 0,
+this means that many residues have been removed and the data has been
+optimized.} \textbf{We also see some outliers at the end and at the
+begining.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stepwiseForward <-}\StringTok{ }\KeywordTok{stepAIC}\NormalTok{(multiple_reg, }\DataTypeTok{direction=}\StringTok{"forward"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Start:  AIC=1597.55
+## medv ~ crim + zn + indus + nox + rm + age + dis + rad + tax + 
+##     ptratio + black + lstat
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stepwiseForward}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = medv ~ crim + zn + indus + nox + rm + age + dis + 
+##     rad + tax + ptratio + black + lstat, data = BostonDataO)
+## 
+## Coefficients:
+## (Intercept)         crim           zn        indus          nox  
+##   36.891960    -0.113139     0.047052     0.040311   -17.366999  
+##          rm          age          dis          rad          tax  
+##    3.850492     0.002784    -1.485374     0.328311    -0.013756  
+##     ptratio        black        lstat  
+##   -0.990958     0.009741    -0.534158
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{residForward <-}\StringTok{ }\KeywordTok{resid}\NormalTok{(stepwiseForward)}
+\KeywordTok{plot}\NormalTok{(residForward)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-9-1.pdf}
+\textbf{Upon plotting the qqplot, there are a number of outliers in the
+data in the begining and at the end.} \textbf{The main concern which I
+feel are the outliers, due to which the data isnt perfectly normal. }
+\textbf{We see that because of the outliers, there is a right tail which
+is making it a right skewed distribution.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#ggplot(data=residForward) +geom_point() +geom_smooth()}
+\KeywordTok{qqnorm}\NormalTok{(residForward)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Boston_rmd_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\eenum
+
+
+\end{document}

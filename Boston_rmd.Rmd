@@ -1,0 +1,267 @@
+---
+title: "Regression"
+author: "Purba Roy"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r Setup, message=FALSE}
+# Load standard libraries
+library(tidyverse)
+library(MASS) # Modern applied statistics functions
+library(ggplot2)
+```
+
+\textbf{Housing Values in Suburbs of Boston}
+
+In this problem we will use the Boston dataset that is available in the \texttt{MASS} package. This dataset contains information about median house value for 506 neighborhoods in Boston, MA. 
+
+```{r}
+# Loading the data
+BostonData <- Boston
+```
+\benum
+
+\item Data Description. Tidy data as necessary.
+
+
+**There are 14 columns/ variables, and 506 rows of data.**
+**The Boston Dataset has the following variables:**
+**crim: this depicts the crime per capita rate in a town**
+**zn: this is the proportion of residential land zone for lots that have an area more than 25,000 sq ft**
+**indus: This depicts the proportion of non-retail business acres per town**
+**chas: this is a dummy variable for charles river where if the value is 1, the tract bounds river**
+**nox : nitrogen oxides concentration**
+**rm : average number of rooms per dwelling**
+**age: this is the proportion of owner-occupied units built prior to 1940**
+**dis :This is the weighted mean of distances to five Boston employment centres**
+**rad: this is the index of accessibility to radial highways.**
+**tax ; This is the full-value property-tax rate per \$10,000**
+**ptratio: the pupil-teacher ratio by town **
+**black: This is the proportion of blacks by town**
+**lstat: This is the lower status of the population in percentage.**
+**medv: This is the median value of owner-occupied homes in \$1000s**
+
+**We see that the variables where the data is a whole number, the data type is integer, and for other cases, its numeric. We convert chas to categorical data as its value is only 0 and 1**
+**None of the variables have NA data, hence its already a clean data.**
+```{r}
+# to find the dimensions of the data set
+dim(BostonData)
+# to check the variable names and respective data.
+head(BostonData)
+
+?Boston
+#View(BostonData)
+
+# to check the datatype of each variable.
+sapply(BostonData,class)
+
+# converting chas  to categorical, as they depict categorical values, so that we can eliminate them from our linear regression model.
+
+BostonData$chas <-as.factor(BostonData$chas)
+```
+
+
+**I have taken medv as the response variable of interest as it is a continuous numeric value, and variables such as tax, lstt, dis, etc are dependant on the value of medv**
+**We see that our varible medv ha sa normal distribution**
+
+```{r}
+# to check the distribution of medv
+ggplot(BostonData) +
+  geom_density(aes(x=medv), alpha=0.1)
+
+```
+
+ 
+
+**ANSWER**
+**On getting the summary and residual plots of the linear regression model, we see that the p- value of all the variables are in the range of less than 2.2e-12 which is significantly than 0.05. This says that all the variables are statistically significant**
+
+**On Plotting the residual plot, we note the below observations:**
+
+**better models for fitting the model**
+**For the predictor variables lstat and rm, the residual points are scattered and do not follow a trend, which makes it a good residual plot. Also, there is a strong negative correlation for lstat (=-0.7376627), and a strong positive corelation for rm (0.6953599), which proves that these 2 predictor variables are better for fitting the regression model.**
+
+```{r}
+
+ #linearMod <- lm(BostonData$medv ~BostonData$indus, data=BostonData) 
+ #linearMod
+ #residual <-resid(linearMod)
+ #plot <- ggplot(data=data.frame(x=BostonData$medv, y= residual),
+  #               aes(x=x,y=y)) + geom_point()+ geom_abline(slope=0,intercept=0)+stat_smooth(method="lm") 
+  #print(plot + ggtitle(i) +labs(x="medv", y="residual"))
+
+# excluding chas as its an ordinal value and removing medv too.
+column <- colnames(BostonData)[c(1:3,5:13)]
+
+# initialising a dataframe for coefficients
+coef_df <- data.frame()
+
+# creating a for loop to fit linear regression model for each predictor Vs Medv.
+for (i in column){
+  BostonDataSS <- subset(BostonData, select=c('medv',i))
+  linearMod <- lm(medv ~ .,BostonDataSS)
+  print(i)
+  print(summary(linearMod))
+  residual <-resid(linearMod)
+  plot <- ggplot(data=data.frame(x=BostonDataSS$medv, y= residual),
+                 aes(x=x,y=y)) + geom_point()+ geom_abline(slope=0,intercept=0)+stat_smooth(method="lm") 
+  print(plot + ggtitle(i) +labs(x="medv", y="residual"))
+  
+  coef_df <- rbind(coef_df, summary(linearMod)$coef[i,"Estimate"])
+}
+
+# find the correlation
+cor(BostonData$medv, BostonData$rm)
+# find the correlation
+cor(BostonData$medv, BostonData$lstat)
+```
+
+
+
+
+\item Fitting a multiple regression model to predict the response using all of the predictors. 
+
+**For the predictor variables, age and indus, the p values are much higher than 0.05 which mean that they are not statistically significant. For the remaining variables, the p values are strongly statiscally significant of the order 0.**
+**FOr predictor variables, for which the p value are less than 0.05, we reject the null hypothesis. SO we do not reject the null hypothesis for age and indus**
+**So this means that indus and age behave like independant variables.**
+**The multiple R square value is 0.7355**
+```{r}
+BostonDataO <- BostonData[-4]
+options(scipen=999)
+multiple_reg <- lm(medv ~., data=BostonDataO)
+
+summary(multiple_reg)
+
+# for coefficients
+multiple_reg$coefficients
+
+
+
+
+```
+
+
+\item  Creating a plot displaying the univariate regression coefficients on the x-axis and the multiple regression coefficients on the y-axis.
+
+**We plotted the scatter plot with multiple regression on the y axis and linear regression on the x axis, and see the p value for the different predictor variables.**
+**We see that for rm, the p value for linear model was ~10, and after multiple regression, where we add other predictor variables to our model, the p value drops to ~3.**
+**For some of the predictor variables, the p value of the linear and the multiple regresiion models are similar.**
+**This shows that when we add random values, the effect of the predictor on the response variables decreases the p value.**
+
+```{r}
+# dropping the intercept value
+Dropmultiple <- multiple_reg$coefficients[-1]
+
+#converting to a data frame
+multiple_reg_model <- as.data.frame(Dropmultiple)
+multiple_reg_model<-tibble::rownames_to_column(multiple_reg_model,"linear_reg_model_old")
+multiple_reg_model
+
+linear_reg_model_coef <- coef_df[,]
+
+linear_reg_model_old <- c("crim","zn","indus","nox","rm","age","dis","rad","tax","ptratio","black","lstat")
+linear_reg_model_old<-as.data.frame(linear_reg_model_old)
+linear_reg_model<-cbind(linear_reg_model_old,linear_reg_model_coef)
+#linear_reg_model<-tibble::rownames_to_column(linear_reg_model,"Variables_Predictor")
+
+dataset<-left_join(linear_reg_model,multiple_reg_model, by="linear_reg_model_old")
+
+linear_reg_model$model_type="one"
+multiple_reg_model$model_type="many"
+colnames(linear_reg_model)<-c("linear_reg_model_old","Dropmultiple","model_type")
+final_dataset<-rbind(linear_reg_model,multiple_reg_model)
+
+# plotting
+ggplot(data=final_dataset, aes(x=linear_reg_model_old, y=Dropmultiple, color=model_type))+geom_point()
+
+#plot(linear_reg_model,newTable, xlim = c(-5,15), ylim=c(-3,5))
+
+```
+
+
+
+**After comparing the different p values for different predictor variables, we see that for a few, the avlues have increased.**
+**It is uncertain that there is a non linear relation. SO a non linear association might not be best for the dataset **
+```{r}
+Poly_function <- function(column)
+{
+  poly <- lm(medv ~ poly(column,3), data= BostonData)
+}
+
+Poly_crim <- Poly_function(BostonData$crim)
+Poly_zn <- Poly_function(BostonData$zn)
+Poly_indus <- Poly_function(BostonData$indus)
+Poly_nox <- Poly_function(BostonData$nox)
+Poly_rm <- Poly_function(BostonData$rm)
+Poly_age <- Poly_function(BostonData$age)
+Poly_dis <- Poly_function(BostonData$dis)
+Poly_rad <- Poly_function(BostonData$rad)
+Poly_tax <- Poly_function(BostonData$tax)
+Poly_ptratio <- Poly_function(BostonData$ptratio)
+Poly_black <- Poly_function(BostonData$black)
+Poly_lstat <- Poly_function(BostonData$lstat)
+Poly_medv <- Poly_function(BostonData$medv)
+summary(Poly_crim)
+summary(Poly_zn)
+summary(Poly_indus)
+summary(Poly_nox)
+summary(Poly_age)
+summary(Poly_dis)
+summary(Poly_rad)
+summary(Poly_tax)
+summary(Poly_ptratio)
+summary(Poly_black)
+summary(Poly_lstat)
+summary(Poly_medv)
+
+```
+
+$$ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon $$
+
+
+
+\item performing a stepwise model selection procedure to determine the bets fit model. 
+
+
+**We observe that only 11 predictor variables are shown the output, where age and indus got dropped. This shows that its a more optimised model as there was age and indus were acting as independant variables.**
+**The AIC value has decreased from 3035.512 for multiple regression to 3031.997 for stepwise selection model, which shows that this model is a better fit now.**
+**We can hence infer that there is a backward propogation **
+
+```{r}
+
+stepwise <- stepAIC(multiple_reg, direction="both", trace= FALSE)
+stepwise
+
+#aic value
+AIC(stepwise)
+
+AIC(multiple_reg)
+```
+\item Evaluating the statistical assumptions in my regression analysis by performing a basic analysis of model residuals and any unusual observations. 
+
+
+**We see that upon backward propogation, the data lies near 0, this means that many residues have been removed and the data has been optimized.**
+**We also see some outliers at the end and at the begining.**
+```{r}
+stepwiseForward <- stepAIC(multiple_reg, direction="forward")
+stepwiseForward
+
+residForward <- resid(stepwiseForward)
+plot(residForward)
+
+```
+**Upon plotting the qqplot, there are a number of outliers in the data in the begining and at the end.**
+**The main concern which I feel are the outliers, due to which the data isnt perfectly normal. **
+**We see that because of the outliers, there is a right tail which is making it a right skewed distribution.**
+
+```{r}
+#ggplot(data=residForward) +geom_point() +geom_smooth()
+qqnorm(residForward)
+```
+
+
+
+\eenum
